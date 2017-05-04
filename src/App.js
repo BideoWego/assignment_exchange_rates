@@ -4,6 +4,7 @@ import Currency from './services/currency';
 import LatestRates from './components/LatestRates';
 import CurrencySelecter from './components/CurrencySelecter';
 import HistoricalRates from './components/HistoricalRates';
+import CurrencyConverter from './components/CurrencyConverter';
 
 
 class App extends Component {
@@ -15,11 +16,18 @@ class App extends Component {
       comparison: 'USD',
       latest: {},
       historical: [],
-      conversion: {}
+      conversion: { value: 1.00 }
     };
 
-    this._onCurrencySelecterChange = this._onCurrencySelecterChange.bind(this);
-    this._onHistoricalComparisonCurrencySelecterChange = this._onHistoricalComparisonCurrencySelecterChange.bind(this);
+    this._onCurrencySelecterChange =
+      this._onCurrencySelecterChange
+        .bind(this);
+    this._onHistoricalComparisonCurrencySelecterChange =
+      this._onHistoricalComparisonCurrencySelecterChange
+        .bind(this);
+    this._onCurrencyConverterValueChange =
+      this._onCurrencyConverterValueChange
+        .bind(this);
   }
 
 
@@ -56,6 +64,13 @@ class App extends Component {
               date={ this.state.latest.date }
               dates={ this.state.historical }
               onCurrencySelecterChange={ this._onHistoricalComparisonCurrencySelecterChange } />
+
+            <CurrencyConverter
+              base={ this.state.base }
+              comparison={ this.state.comparison }
+              value={ this.state.conversion.value }
+              rates={ this.state.latest.rates }
+              onValueChange={ this._onCurrencyConverterValueChange } />
           </div>
         </div>
 
@@ -80,6 +95,21 @@ class App extends Component {
     this.setState({
       comparison: symbol
     }, () => this._refresh());
+  }
+
+
+  _onCurrencyConverterValueChange(e) {
+    if (e.target.value !== '') {
+      const value = +e.target.value;
+      console.log(e.target);
+      this.setState({
+        conversion: { value }
+      }, () => console.log(this.state));
+    } else {
+      this.setState({
+        conversion: { value: '' }
+      });
+    }
   }
 
 
