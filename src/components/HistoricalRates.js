@@ -1,13 +1,15 @@
 import React from 'react';
+import CurrencySelecter from './CurrencySelecter';
 import { default as _ } from 'lodash';
-
+import Currency from './../services/currency';
 
 const HistoricalRates = (props) => {
   const {
     base,
     comparison,
     date,
-    dates
+    dates,
+    onCurrencySelecterChange
   } = props;
 
   const rates = {};
@@ -23,8 +25,11 @@ const HistoricalRates = (props) => {
         <h2>Historical Rates</h2>
       </header>
       <h3>Base: { base }</h3>
-      <h3>Comparison: { comparison }</h3>
       <h4>Date: { date }</h4>
+      <CurrencySelecter
+        symbols={ Currency.SYMBOLS }
+        onChange={ onCurrencySelecterChange }
+        value={ comparison } />
       <pre>{ JSON.stringify(rates, null, 2) }</pre>
     </div>
   );

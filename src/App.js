@@ -12,12 +12,14 @@ class App extends Component {
 
     this.state = {
       base: 'EUR',
+      comparison: 'USD',
       latest: {},
       historical: [],
       conversion: {}
     };
 
     this._onCurrencySelecterChange = this._onCurrencySelecterChange.bind(this);
+    this._onHistoricalComparisonCurrencySelecterChange = this._onHistoricalComparisonCurrencySelecterChange.bind(this);
   }
 
 
@@ -50,9 +52,10 @@ class App extends Component {
           <div className="col">
             <HistoricalRates
               base={ this.state.base }
-              comparison="USD"
+              comparison={ this.state.comparison }
               date={ this.state.latest.date }
-              dates={ this.state.historical } />
+              dates={ this.state.historical }
+              onCurrencySelecterChange={ this._onHistoricalComparisonCurrencySelecterChange } />
           </div>
         </div>
 
@@ -67,6 +70,15 @@ class App extends Component {
     const symbol = Currency.SYMBOLS[index];
     this.setState({
       base: symbol
+    }, () => this._refresh());
+  }
+
+
+  _onHistoricalComparisonCurrencySelecterChange(e) {
+    const index = e.target.selectedIndex;
+    const symbol = Currency.SYMBOLS[index];
+    this.setState({
+      comparison: symbol
     }, () => this._refresh());
   }
 
