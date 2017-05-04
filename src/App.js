@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import Currency from './services/currency';
 import LatestRates from './components/LatestRates';
 import CurrencySelecter from './components/CurrencySelecter';
+import HistoricalRates from './components/HistoricalRates';
 
 
 class App extends Component {
@@ -12,7 +13,7 @@ class App extends Component {
     this.state = {
       base: 'EUR',
       latest: {},
-      historical: {},
+      historical: [],
       conversion: {}
     };
 
@@ -37,10 +38,25 @@ class App extends Component {
             value={ this.state.base } />
         </header>
 
-        <LatestRates
-          base={ this.state.latest.base }
-          date={ this.state.latest.date }
-          rates={ this.state.latest.rates } />
+        <div className="row">
+          <div className="col">
+            <LatestRates
+              base={ this.state.latest.base }
+              date={ this.state.latest.date }
+              rates={ this.state.latest.rates } />
+          </div>
+
+
+          <div className="col">
+            <HistoricalRates
+              base={ this.state.base }
+              comparison="USD"
+              date={ this.state.latest.date }
+              dates={ this.state.historical } />
+          </div>
+        </div>
+
+
       </main>
     );
   }
@@ -56,10 +72,16 @@ class App extends Component {
 
 
   _refresh() {
-    Currency.latest(this.state.base)
+    const promises = [
+      Currency.latest(this.state.base),
+      Currency.historical(this.state.base)
+    ];
+
+    Promise.all(promises)
       .then((results) => {
         this.setState({
-          latest: results
+          latest: results[0],
+          historical: results[1]
         });
       })
       .catch((error) => {

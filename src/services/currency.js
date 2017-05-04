@@ -1,3 +1,4 @@
+import moment from 'moment';
 import 'whatwg-fetch';
 
 
@@ -66,15 +67,28 @@ Currency.latest = (base) => {
 };
 
 
-Currency.historical = (date, base) => {
+Currency.historical = (base, date) => {
+  if (date)
   date = date || new Date()
     .toISOString()
     .slice(0, 10);
   base = base || 'EUR';
 
-  const url = `${ API_ENDPOINT }${ date }?base=${ base }`;
+  const urls = [];
+  for (let i = 1; i < 4; i++) {
+    let tempDate = moment()
+      .subtract(i, 'years')
+      .format('YYYY-MM-DD');
+    const url = `${ API_ENDPOINT }${ tempDate }?base=${ base }`;
+    urls.push(url);
+  }
 
-  return _get(url);
+  const promises = [];
+  urls.forEach((url) => {
+    promises.push(_get(url));
+  });
+
+  return Promise.all(promises);
 };
 
 
