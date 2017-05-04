@@ -673,6 +673,6 @@ const bigMacData = {
     "yen_adj_valuation": 36.4,
     "yuan_adj_valuation": 16.8
   }]
-}
+};
 
-export default bigMacData
+export default bigMacData;
