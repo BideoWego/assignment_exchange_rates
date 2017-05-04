@@ -19,20 +19,14 @@ class App extends Component {
       conversion: { value: 1.00 }
     };
 
-    this._onCurrencySelecterChange =
-      this._onCurrencySelecterChange
-        .bind(this);
-    this._onHistoricalComparisonCurrencySelecterChange =
-      this._onHistoricalComparisonCurrencySelecterChange
-        .bind(this);
-    this._onCurrencyConverterValueChange =
-      this._onCurrencyConverterValueChange
-        .bind(this);
+    this._bindEventHandlers();
   }
 
 
   componentDidMount() {
-    this._refresh();
+    const base = this.state.base;
+    const comparison = this.state.comparison;
+    this._refresh({ base, comparison });
   }
 
 
@@ -83,45 +77,59 @@ class App extends Component {
   _onCurrencySelecterChange(e) {
     const index = e.target.selectedIndex;
     const symbol = Currency.SYMBOLS[index];
-    this.setState({
-      base: symbol
-    }, () => this._refresh());
+
+    this._refresh({
+      base: symbol,
+      comparison: this.state.comparison
+    });
   }
 
 
   _onHistoricalComparisonCurrencySelecterChange(e) {
     const index = e.target.selectedIndex;
     const symbol = Currency.SYMBOLS[index];
-    this.setState({
+
+    this._refresh({
+      base: this.state.base,
       comparison: symbol
-    }, () => this._refresh());
+    });
   }
 
 
   _onCurrencyConverterValueChange(e) {
+    let value = '';
+
     if (e.target.value !== '') {
-      const value = +e.target.value;
-      console.log(e.target);
-      this.setState({
-        conversion: { value }
-      }, () => console.log(this.state));
-    } else {
-      this.setState({
-        conversion: { value: '' }
-      });
+      value = +e.target.value;
     }
+
+    this.setState({
+      conversion: { value }
+    });
   }
 
 
-  _refresh() {
+  _refresh(options) {
+    const {
+      base,
+      comparison
+    } = options;
+
+
+    // Pass base to this function?
+    // Avoid double rendering?
     const promises = [
-      Currency.latest(this.state.base),
-      Currency.historical(this.state.base)
+      Currency.latest(base),
+      Currency.historical(base)
     ];
 
+    // Set if we can make this the only
+    // set state call on change
     Promise.all(promises)
       .then((results) => {
         this.setState({
+          base,
+          comparison,
           latest: results[0],
           historical: results[1]
         });
@@ -129,6 +137,18 @@ class App extends Component {
       .catch((error) => {
         console.error(error);
       });
+  }
+
+  _bindEventHandlers() {
+    const handlerNames = [
+      '_onCurrencySelecterChange',
+      '_onHistoricalComparisonCurrencySelecterChange',
+      '_onCurrencyConverterValueChange'
+    ];
+
+    handlerNames.forEach((name) => {
+      this[name] = this[name].bind(this);
+    });
   }
 }
 

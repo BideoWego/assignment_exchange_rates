@@ -26,8 +26,6 @@ const CurrencyConverter = (props) => {
     data[comparison] = converted;
   }
 
-  console.log(value);
-
 
   return (
     <div id="CurrencyConverter">
